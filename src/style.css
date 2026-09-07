@@ -1153,6 +1153,7 @@ option {
     display: flex !important;
     flex: 1 !important;
     height: auto !important;
+    padding-bottom: 60px !important;
   }
 
   /* Viewport nav tabs: full width, 5 equal buttons, zero horizontal overflow */
@@ -1212,6 +1213,168 @@ option {
   .term-container {
     padding: 10px 12px;
     font-size: 0.82rem;
+  }
+
+  /* SOC SIEM MOBILE RESPONSIVE LAYOUT */
+  #pane-siem {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    height: 100%;
+    display: none;
+  }
+  #pane-siem.active {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .siem-container {
+    height: auto !important;
+    min-height: 100%;
+    padding: 14px 12px 60px 12px !important;
+    gap: 14px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .siem-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .siem-title-box {
+    gap: 8px !important;
+  }
+
+  .siem-title-box h3 {
+    font-size: 0.82rem !important;
+    line-height: 1.35 !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .siem-summary-stats {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .siem-summary-stats .stat-pill {
+    flex: 1;
+    text-align: center;
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+
+  /* Single Column Stack on Mobile: No more cramped side-by-side! */
+  .siem-split {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  .siem-feed-panel,
+  .siem-controls-panel {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 14px !important;
+    overflow: visible !important;
+  }
+
+  .siem-feed-panel {
+    min-height: 200px;
+    max-height: 320px;
+  }
+
+  .siem-alert-feed {
+    max-height: 240px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .defense-toggle-item {
+    padding: 12px 14px !important;
+    margin-bottom: 12px !important;
+    gap: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 6px !important;
+  }
+
+  .defense-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+    padding-right: 8px !important;
+  }
+
+  .defense-name {
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    line-height: 1.35 !important;
+    margin-bottom: 4px !important;
+    display: block !important;
+  }
+
+  .defense-desc {
+    font-size: 0.74rem !important;
+    color: var(--text-muted) !important;
+    line-height: 1.4 !important;
+    display: block !important;
+  }
+
+  .switch {
+    width: 44px !important;
+    height: 24px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .slider:before {
+    height: 18px !important;
+    width: 18px !important;
+    left: 3px !important;
+    bottom: 2px !important;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(19px) !important;
+  }
+
+  .siem-status-card {
+    padding: 12px 14px !important;
+    margin-top: 10px !important;
+    background: rgba(0, 255, 102, 0.06) !important;
+    border: 1px solid var(--border-dim) !important;
+    border-radius: 6px !important;
+  }
+
+  .defense-status {
+    font-size: 0.8rem !important;
+  }
+
+  /* TOPOLOGY RADAR & NOTES MOBILE TWEAKS */
+  .radar-intel-banner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+    padding: 8px 12px !important;
+    font-size: 0.68rem !important;
+  }
+
+  #pane-scratchpad {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scratchpad-container {
+    padding: 12px 10px 50px 10px !important;
+    gap: 10px !important;
   }
 }
 
