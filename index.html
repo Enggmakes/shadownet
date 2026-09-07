@@ -50,7 +50,7 @@
           </div>
         </div>
 
-        <div class="header-controls">
+        <div class="header-controls desktop-only-controls">
           <!-- OPERATION SELECTOR -->
           <select class="theme-select op-select" id="opSelector" title="Jump to Mission">
             <option value="1">0x01: Recon (nmap)</option>
@@ -67,13 +67,13 @@
             <option value="12">0x0C: Docker Escape (docker)</option>
           </select>
           <button class="btn-ctrl btn-report" id="btnReport" title="Executive Pen-Test Report">
-            📄 Report
+            <span class="btn-icon">📄</span><span class="btn-text"> Report</span>
           </button>
           <button class="btn-ctrl" id="btnAudio" title="Toggle Sound FX">
-            <span id="audioIcon">🔊</span> Audio
+            <span id="audioIcon" class="btn-icon">🔊</span><span class="btn-text"> Audio</span>
           </button>
           <button class="btn-ctrl" id="btnCrt" title="Toggle CRT Scanline Effect">
-            📺 CRT
+            <span class="btn-icon">📺</span><span class="btn-text"> CRT</span>
           </button>
           <select class="theme-select" id="themeSelector" title="Switch Color Theme">
             <option value="matrix">Matrix Green</option>
@@ -82,7 +82,87 @@
             <option value="blood">Syndicate Red</option>
           </select>
         </div>
+
+        <!-- MOBILE HAMBURGER BUTTON -->
+        <button class="mobile-hamburger-btn" id="mobileMenuToggle" aria-label="Toggle Operations Menu">
+          <span class="bar bar-1"></span>
+          <span class="bar bar-2"></span>
+          <span class="bar bar-3"></span>
+        </button>
       </header>
+
+      <!-- MOBILE SLIDE-OUT DRAWER -->
+      <div class="mobile-drawer-overlay hidden" id="mobileDrawerOverlay">
+        <div class="mobile-drawer" id="mobileDrawer">
+          <div class="drawer-header">
+            <span class="drawer-title">⚡ OPERATIONS MENU</span>
+            <button class="drawer-close" id="mobileDrawerClose">✕</button>
+          </div>
+          
+          <div class="drawer-section">
+            <label class="drawer-label">SELECT OPERATION</label>
+            <select class="theme-select mobile-op-select" id="mobileOpSelector">
+              <option value="1">0x01: Recon (nmap)</option>
+              <option value="2">0x02: Web Fuzz (gobuster)</option>
+              <option value="3">0x03: SSH Brute (hydra)</option>
+              <option value="4">0x04: SQLi (sqlmap)</option>
+              <option value="5">0x05: Sudo Root (find)</option>
+              <option value="6">0x06: JWT Forgery (jwt-tool)</option>
+              <option value="7">0x07: RCE Shell (nc)</option>
+              <option value="8">0x08: Pivoting (chisel)</option>
+              <option value="9">0x09: Kerberoast (impacket)</option>
+              <option value="10">0x0A: Capabilities (python3)</option>
+              <option value="11">0x0B: Cloud SSRF (aws)</option>
+              <option value="12">0x0C: Docker Escape (docker)</option>
+            </select>
+          </div>
+
+          <div class="drawer-section drawer-buttons">
+            <button class="drawer-btn btn-report" id="mobileBtnReport">
+              <span>📄</span> Executive Pen-Test Report
+            </button>
+            <button class="drawer-btn" id="mobileBtnAudio">
+              <span id="mobileAudioIcon">🔊</span> Audio FX: <span id="mobileAudioStatus">ON</span>
+            </button>
+            <button class="drawer-btn" id="mobileBtnCrt">
+              <span>📺</span> CRT Scanlines: <span id="mobileCrtStatus">ON</span>
+            </button>
+          </div>
+
+          <div class="drawer-section">
+            <label class="drawer-label">COLOR THEME</label>
+            <select class="theme-select mobile-theme-select" id="mobileThemeSelector">
+              <option value="matrix">Matrix Green</option>
+              <option value="cyber">Cyber Cyan</option>
+              <option value="amber">Amber Mainframe</option>
+              <option value="blood">Syndicate Red</option>
+            </select>
+          </div>
+
+          <div class="drawer-section drawer-intel">
+            <div class="drawer-intel-item">
+              <span class="intel-label">SESSION:</span>
+              <span class="intel-val" id="mobileHudSession">guest@shadownet</span>
+            </div>
+            <div class="drawer-intel-item">
+              <span class="intel-label">TARGET IP:</span>
+              <span class="intel-val" id="mobileHudTarget">192.168.1.42</span>
+            </div>
+            <div class="drawer-intel-item">
+              <span class="intel-label">DOMAIN:</span>
+              <span class="intel-val">internal.stag-apex.corp</span>
+            </div>
+            <div class="drawer-intel-item">
+              <span class="intel-label">RANK:</span>
+              <span class="intel-val" id="mobileHudRank">Level 1 // Script Kiddie</span>
+            </div>
+            <div class="drawer-intel-item">
+              <span class="intel-label">PROGRESS XP:</span>
+              <span class="intel-val" id="mobileHudXp">0 / 6000 XP</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- WORKSPACE MAIN GRID -->
       <main class="main-workspace">
@@ -91,23 +171,26 @@
           <nav class="viewport-nav">
             <div class="tab-group">
               <button class="nav-tab active" data-tab="terminal">
-                <span>&gt;_</span> CLI Terminal
+                <span>&gt;_</span> <span class="tab-text">Terminal</span>
                 <span class="tab-badge">TTY1</span>
               </button>
               <button class="nav-tab" data-tab="topology">
-                <span>📡</span> Network Topology Radar
+                <span>📡</span> <span class="tab-text">Radar</span>
                 <span class="tab-badge" id="badgePorts">0 Ports</span>
               </button>
               <button class="nav-tab" data-tab="siem">
-                <span>🛡️</span> SOC SIEM
+                <span>🛡️</span> <span class="tab-text">SIEM</span>
                 <span class="tab-badge badge-alert" id="badgeAlerts">0 Alerts</span>
               </button>
               <button class="nav-tab" data-tab="scratchpad">
-                <span>📝</span> Cyber Deck Notes
+                <span>📝</span> <span class="tab-text">Notes</span>
+              </button>
+              <button class="nav-tab mobile-only-tab" data-tab="mission">
+                <span>🎯</span> <span class="tab-text">Mission</span>
               </button>
             </div>
 
-            <div class="viewport-meta">
+            <div class="viewport-meta desktop-only-meta">
               <span class="intel-label">SESSION:</span>
               <span class="status-active" id="hudSession">guest@shadownet</span>
             </div>
@@ -390,7 +473,7 @@
             <span>TOR NODE:</span>
             <span class="status-active" style="color: var(--accent-secondary);">185.220.101.5</span>
           </div>
-          <div class="status-tag">
+          <div class="status-tag status-tag-enc">
             <span>ENCRYPTION:</span>
             <span class="status-active">AES-256-GCM / SHA-512</span>
           </div>

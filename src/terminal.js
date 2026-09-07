@@ -452,16 +452,21 @@ export class TerminalController {
   }
 
   printBanner() {
-    const banner = `
+    const bannerContainer = document.createElement('div');
+    bannerContainer.className = 'term-banner-container';
+    bannerContainer.innerHTML = `
+      <pre class="term-banner">
  ███████╗██╗  ██╗ █████╗ ██████╗  ██████╗ ██╗    ██╗███╗   ██╗███████╗████████╗
  ██╔════╝██║  ██║██╔══██╗██╔══██╗██╔═══██╗██║    ██║████╗  ██║██╔════╝╚══██╔══╝
  ███████╗███████║███████║██║  ██║██║   ██║██║ █╗ ██║██╔██╗ ██║█████╗     ██║   
  ╚════██║██╔══██║██╔══██║██║  ██║██║   ██║██║███╗██║██║╚██╗██║██╔══╝     ██║   
  ███████║██║  ██║██║  ██║██████╔╝╚██████╔╝╚███╔███╔╝██║ ╚████║███████╗   ██║   
  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝   
-                                                           [ v1.0.4 - SOVEREIGN ]
+                                                           [ v1.0.4 - SOVEREIGN ]</pre>
+    `;
+    this.output.appendChild(bannerContainer);
 
-[   0.001248] Linux shadownet-core 6.8.9-shadow-hardened x86_64
+    const bootSequence = `[   0.001248] Linux shadownet-core 6.8.9-shadow-hardened x86_64
 [   0.014291] Initializing virtual network interface tun0... [ OK ]
 [   0.038102] Loading cryptographic modules (AES-256-GCM, ed25519)... [ OK ]
 [   0.091140] Initializing security sandbox & ephemeral storage... [ OK ]
@@ -474,20 +479,18 @@ export class TerminalController {
 [*] Session ID           : SN-SEC-9941-OMEGA
 [*] User context         : guest (uid=1001, gid=1001)
 
-==============================================================================
-                    MISSION 0x01: TARGET RECONNAISSANCE
-==============================================================================
+--------------------------------------------------
+       MISSION 0x01: TARGET RECONNAISSANCE
+--------------------------------------------------
  TARGET IP   : 192.168.1.42
  DOMAIN      : internal.stag-apex.corp
- OBJECTIVE   : Perform network reconnaissance against the target using 'nmap'.
-               Identify open ports, active services, and discover potential
-               entry points for exploitation.
-
- INSTRUCTIONS: Run a port scan against 192.168.1.42 (e.g. 'nmap 192.168.1.42').
-               Type 'help' for tool list or 'hint' for tactical guidance.
-==============================================================================
+ OBJECTIVE   : Perform network reconnaissance using 'nmap'.
+               Identify open ports & services.
+ INSTRUCTION : Run 'nmap 192.168.1.42' to map perimeter.
+               Type 'help' for arsenal or 'hint' for clues.
+--------------------------------------------------
 `;
-    this.printRaw(banner, 'accent');
+    this.printRaw(bootSequence, 'accent');
   }
 
   printHelp() {

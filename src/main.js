@@ -188,6 +188,12 @@ document.addEventListener('DOMContentLoaded', () => {
         activePane.classList.add('active');
       }
 
+      if (targetTab === 'mission') {
+        document.body.classList.add('mobile-tab-mission');
+      } else {
+        document.body.classList.remove('mobile-tab-mission');
+      }
+
       if (targetTab === 'topology') {
         topology.resize();
       } else if (targetTab === 'terminal') {
@@ -232,10 +238,88 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Mobile Hamburger Drawer Controller
+  const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+  const mobileDrawerOverlay = document.getElementById('mobileDrawerOverlay');
+  const mobileDrawerClose = document.getElementById('mobileDrawerClose');
+  const mobileOpSelector = document.getElementById('mobileOpSelector');
+  const mobileBtnReport = document.getElementById('mobileBtnReport');
+  const mobileBtnAudio = document.getElementById('mobileBtnAudio');
+  const mobileAudioIcon = document.getElementById('mobileAudioIcon');
+  const mobileAudioStatus = document.getElementById('mobileAudioStatus');
+  const mobileBtnCrt = document.getElementById('mobileBtnCrt');
+  const mobileCrtStatus = document.getElementById('mobileCrtStatus');
+  const mobileThemeSelector = document.getElementById('mobileThemeSelector');
+  const mobileHudTarget = document.getElementById('mobileHudTarget');
+  const mobileHudRank = document.getElementById('mobileHudRank');
+  const mobileHudXp = document.getElementById('mobileHudXp');
+  const mobileHudSession = document.getElementById('mobileHudSession');
+
+  function toggleMobileDrawer(open) {
+    const isOpen = open !== undefined ? open : mobileDrawerOverlay.classList.contains('hidden');
+    if (isOpen) {
+      mobileDrawerOverlay.classList.remove('hidden');
+      if (mobileMenuToggle) mobileMenuToggle.classList.add('open');
+      sound.playEnter();
+    } else {
+      mobileDrawerOverlay.classList.add('hidden');
+      if (mobileMenuToggle) mobileMenuToggle.classList.remove('open');
+    }
+  }
+
+  if (mobileMenuToggle) mobileMenuToggle.addEventListener('click', () => toggleMobileDrawer());
+  if (mobileDrawerClose) mobileDrawerClose.addEventListener('click', () => toggleMobileDrawer(false));
+  if (mobileDrawerOverlay) {
+    mobileDrawerOverlay.addEventListener('click', (e) => {
+      if (e.target === mobileDrawerOverlay) toggleMobileDrawer(false);
+    });
+  }
+
+  if (mobileOpSelector) {
+    mobileOpSelector.addEventListener('change', (e) => {
+      handleOpSelection(e.target.value);
+      toggleMobileDrawer(false);
+    });
+  }
+
+  if (mobileBtnReport) {
+    mobileBtnReport.addEventListener('click', () => {
+      toggleMobileDrawer(false);
+      openReportModal();
+    });
+  }
+
+  if (mobileBtnAudio) {
+    mobileBtnAudio.addEventListener('click', () => {
+      const isMuted = sound.toggleMute();
+      if (audioIcon) audioIcon.innerText = isMuted ? '🔇' : '🔊';
+      if (mobileAudioIcon) mobileAudioIcon.innerText = isMuted ? '🔇' : '🔊';
+      if (mobileAudioStatus) mobileAudioStatus.innerText = isMuted ? 'OFF' : 'ON';
+    });
+  }
+
+  if (mobileBtnCrt) {
+    mobileBtnCrt.addEventListener('click', () => {
+      document.body.classList.toggle('crt-scanlines');
+      const hasCrt = document.body.classList.contains('crt-scanlines');
+      if (mobileCrtStatus) mobileCrtStatus.innerText = hasCrt ? 'ON' : 'OFF';
+      sound.playKeystroke();
+    });
+  }
+
+  if (mobileThemeSelector) {
+    mobileThemeSelector.addEventListener('change', (e) => {
+      terminal.handleTheme(e.target.value);
+      if (themeSelector) themeSelector.value = e.target.value;
+      toggleMobileDrawer(false);
+    });
+  }
+
   document.addEventListener('shadownet:mission_changed', (e) => {
     const mission = e.detail.mission;
     if (opSelector) opSelector.value = mission.id;
     if (sidebarOpSelect) sidebarOpSelect.value = mission.id;
+    if (mobileOpSelector) mobileOpSelector.value = mission.id;
     updateHUD();
   });
 
@@ -439,6 +523,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (opSelector) opSelector.value = curr.id;
     if (sidebarOpSelect) sidebarOpSelect.value = curr.id;
+    if (mobileOpSelector) mobileOpSelector.value = curr.id;
+
+    if (mobileHudTarget) mobileHudTarget.innerText = curr.target;
+    if (mobileHudRank) mobileHudRank.innerText = `Level ${rank.level} // ${rank.title}`;
+    if (mobileHudXp) mobileHudXp.innerText = `${missionManager.totalXP} / 6000 XP`;
+    if (mobileHudSession) mobileHudSession.innerText = `${terminal.user}@${terminal.hostname}`;
 
     // Render Objectives
     objectivesList.innerHTML = '';
