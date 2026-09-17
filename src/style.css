@@ -511,10 +511,69 @@ option {
   font-weight: 500;
 }
 
-.prompt-local { color: var(--accent-primary); }
-.prompt-remote { color: var(--accent-secondary); }
+.prompt-local { color: var(--accent-primary); font-weight: 600; }
+.prompt-remote { color: var(--accent-secondary); font-weight: 600; }
 .prompt-root { color: var(--accent-danger); font-weight: 700; }
-.prompt-path { color: #58a6ff; }
+.prompt-path { color: #58a6ff; font-weight: 500; }
+.prompt-sep { color: var(--text-dim); }
+.prompt-symbol { color: var(--accent-primary); font-weight: 700; }
+
+/* EXECUTED COMMAND HISTORY LINES */
+.term-cmd-entry {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--accent-primary);
+  border-radius: 0 4px 4px 0;
+  line-height: 1.45;
+  word-break: break-all;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.term-cmd-entry:first-child {
+  margin-top: 4px;
+}
+
+.term-prompt-prefix {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  user-select: none;
+  white-space: pre;
+}
+
+.term-executed-cmd {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* SYNTAX HIGHLIGHTING FOR EXECUTED COMMANDS */
+.cmd-token-binary {
+  color: var(--accent-primary);
+  font-weight: 700;
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+.cmd-token-flag {
+  color: var(--accent-warning);
+  font-weight: 600;
+}
+
+.cmd-token-target {
+  color: var(--accent-secondary);
+  font-weight: 600;
+}
+
+.cmd-token-path {
+  color: #79c0ff;
+  text-decoration: underline dotted rgba(121, 192, 255, 0.4);
+}
+
+.cmd-token-arg {
+  color: #f0f6fc;
+}
 
 .term-input-wrapper {
   position: relative;

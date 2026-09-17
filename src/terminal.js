@@ -62,7 +62,7 @@ export class TerminalController {
     this.updatePrompt();
   }
 
-  updatePrompt() {
+  getPromptHTML() {
     const rawCwd = this.currentFS.cwd;
     const home = this.currentFS.home;
     const displayDir = rawCwd === home ? '~' : (rawCwd.startsWith(home + '/') ? '~' + rawCwd.slice(home.length) : rawCwd);
@@ -70,7 +70,11 @@ export class TerminalController {
     const userClass = this.isRoot ? 'prompt-root' : (this.isRemote ? 'prompt-remote' : 'prompt-local');
     const symbol = this.isRoot ? '#' : '$';
 
-    this.promptText.innerHTML = `<span class="${userClass}">${this.user}@${this.hostname}</span>:<span class="prompt-path">${displayDir}</span>${symbol} `;
+    return `<span class="term-prompt-prefix"><span class="${userClass}">${this.user}@${this.hostname}</span><span class="prompt-sep">:</span><span class="prompt-path">${displayDir}</span><span class="prompt-symbol">${symbol}</span> </span>`;
+  }
+
+  updatePrompt() {
+    this.promptText.innerHTML = this.getPromptHTML();
   }
 
   updateCursorPosition() {}
@@ -132,7 +136,7 @@ export class TerminalController {
         this.sniffer.stop();
         return;
       }
-      this.printLine(`${this.promptText.innerText}${this.input.value}^C`, 'dim');
+      this.printCommandLine(this.getPromptHTML(), `${this.input.value}^C`, true);
       this.input.value = '';
       this.isAwaitingPassword = false;
       this.passwordCallback = null;
@@ -166,7 +170,7 @@ export class TerminalController {
       if (matches.length === 1) {
         this.input.value = matches[0] + ' ';
       } else if (matches.length > 1) {
-        this.printLine(`${this.promptText.innerText}${this.input.value}`, 'dim');
+        this.printCommandLine(this.getPromptHTML(), this.input.value);
         this.printLine(matches.join('   '), 'info');
       }
     } else {
@@ -177,7 +181,7 @@ export class TerminalController {
           : completions[0].match;
         this.input.value = parts.join(' ');
       } else if (completions.length > 1) {
-        this.printLine(`${this.promptText.innerText}${this.input.value}`, 'dim');
+        this.printCommandLine(this.getPromptHTML(), this.input.value);
         this.printLine(completions.map(c => c.match).join('   '), 'info');
       }
     }
@@ -194,7 +198,7 @@ export class TerminalController {
     const trimmed = rawInput.trim();
 
     if (this.isAwaitingPassword) {
-      this.printLine(`${this.promptText.innerText}********`, 'dim');
+      this.printCommandLine(this.getPromptHTML(), '********');
       this.input.type = 'text';
       this.isAwaitingPassword = false;
       const cb = this.passwordCallback;
@@ -203,7 +207,7 @@ export class TerminalController {
       return;
     }
 
-    this.printLine(`${this.promptText.innerText}${rawInput}`);
+    this.printCommandLine(this.getPromptHTML(), rawInput);
 
     if (!trimmed) {
       this.scrollToBottom();
@@ -1023,6 +1027,57 @@ User devadmin may run the following commands on internal.stag-apex.corp:
     div.className = `term-line ${tag ? `term-${tag}` : ''}`;
     div.innerHTML = text;
     this.output.appendChild(div);
+  }
+
+  printCommandLine(promptHTML, rawInput, isInterrupted = false) {
+    const div = document.createElement('div');
+    div.className = 'term-line term-cmd-entry';
+
+    if (isInterrupted) {
+      div.innerHTML = `${promptHTML}<span class="term-executed-cmd term-dim">${this.escapeHtml(rawInput)}</span>`;
+    } else if (!rawInput.trim()) {
+      div.innerHTML = promptHTML;
+    } else {
+      const highlighted = this.highlightCommand(rawInput);
+      div.innerHTML = `${promptHTML}<span class="term-executed-cmd">${highlighted}</span>`;
+    }
+
+    this.output.appendChild(div);
+  }
+
+  highlightCommand(rawInput) {
+    if (!rawInput) return '';
+    const parts = rawInput.split(/(\s+)/);
+    let isFirst = true;
+
+    return parts.map(part => {
+      if (/^\s+$/.test(part)) return part;
+      const safe = this.escapeHtml(part);
+      if (isFirst) {
+        isFirst = false;
+        return `<span class="cmd-token-binary">${safe}</span>`;
+      }
+      if (part.startsWith('-')) {
+        return `<span class="cmd-token-flag">${safe}</span>`;
+      }
+      if (/^https?:\/\//i.test(part) || /^(\d{1,3}\.){3}\d{1,3}/.test(part)) {
+        return `<span class="cmd-token-target">${safe}</span>`;
+      }
+      if (part.startsWith('/') || part.startsWith('./') || part.startsWith('../') || part.startsWith('~')) {
+        return `<span class="cmd-token-path">${safe}</span>`;
+      }
+      return `<span class="cmd-token-arg">${safe}</span>`;
+    }).join('');
+  }
+
+  escapeHtml(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
   printRaw(text, tag = '') {
